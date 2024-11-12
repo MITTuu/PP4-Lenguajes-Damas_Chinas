@@ -4,8 +4,7 @@ Este proyecto es una implementación del juego **Damas Chinas** como parte de un
 
 ## Características
 
-- **Juego Multijugador**: Permite que dos jugadores jueguen una partida de Damas Chinas en línea.
-- **Sistema de Autenticación**: Incluye un sistema de registro y login para los usuarios.
+- **Juego Multijugador**: Permite que dos, tres, cuatro o seis jugadores jueguen una partida de Damas Chinas en línea.
 - **Tecnologías Usadas**:
   - **Frontend**: React.js para la interfaz de usuario.
   - **Backend**: Node.js con Express.js.
