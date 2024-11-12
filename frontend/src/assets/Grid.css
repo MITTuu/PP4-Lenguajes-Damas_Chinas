@@ -1,0 +1,66 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Contenedor principal de la cuadrícula */
+  .grid-container {
+    display: grid;
+    grid-template-columns: 40px repeat(25, 40px);
+    grid-template-rows: 40px repeat(17, 40px); 
+  }
+  
+  /* Celdas de los encabezados (fila y columna) */
+  .header-cell,
+  .grid-cell {
+    display: flex;
+    justify-content: center; 
+    align-items: center;     
+  }
+  
+  /* Encabezado de la primera fila (column header) */
+  .column-header {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    width: 40px;  
+    height: 40px; 
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+  }
+  
+  /* Encabezado de la primera columna (row header) */
+  .row-header {
+    border-right: 1px solid black;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Primera celda del row header (borde superior) */
+  .row-header.first-row {
+    border-top: 1px solid black;
+  }
+  
+  /* Primera celda del column header (borde izquierdo) */
+  .column-header.first-column {
+    border-left: 1px solid black;
+  }
+  
+  /* Celdas de la cuadrícula: bordes solo a la derecha y abajo */
+  .grid-cell {
+    width: 40px;
+    height: 40px;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+  }
+  
+  
