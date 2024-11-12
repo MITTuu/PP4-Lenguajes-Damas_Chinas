@@ -63,4 +63,13 @@ body, html {
     border-bottom: 1px solid black;
   }
   
+  /* Círculo con borde negro sin fondo */
+  .circle {
+    border-radius: 50%;      /* Forma de círculo */
+    border: 2px solid black; /* Borde negro */
+    background-color: transparent; /* Fondo transparente */
+    position: absolute;      /* Posicionamiento absoluto */
+    width: 40px;             /* Ocupa todo el ancho de la celda */
+    height: 40px;            /* Ocupa todo el alto de la celda */
+  }
   

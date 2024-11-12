@@ -1,7 +1,7 @@
 // Board.js
 import React from 'react';
 import Cell from './Cell';
-import '../assets/Board.css';
+import './Board.css';
 
 const Board = () => {
   // Definición de la estructura del tablero con diferentes filas y columnas

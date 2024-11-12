@@ -1,5 +1,5 @@
 import React from 'react';
-import '../assets/Board.css';
+import './Board.css';
 
 const Cell = ({ color, onClick, isSelected }) => {
   let cellStyle = {};

@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Login from './components/Login';
 import Register from './components/Register';
-import Board from './components/Board';
+import Board from './components/Pruebas/Board';
 import Grid from './components/Grid';
 
 
