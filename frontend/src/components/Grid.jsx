@@ -32,7 +32,7 @@ const Grid = () => {
   ];
   //Fichas amarillas:
   const yellowCoordinates = [
-    [4, 0], [4, 2], [4, 4], [4, 6], [5, 1], [5, 3], [5, 5], [6, 2], [6, 4], [7, 3], [7, 5]
+    [4, 0], [4, 2], [4, 4], [4, 6], [5, 1], [5, 3], [5, 5], [6, 2], [6, 4], [7, 3]
   ];
     //Fichas moradas:
   const purpleCoordinates = [
