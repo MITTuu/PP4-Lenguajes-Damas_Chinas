@@ -58,7 +58,16 @@ const Grid = () => {
     if (greenCoordinates.some(([r, c]) => r === row && c === col)) return 'green-cell';
     if (blueCoordinates.some(([r, c]) => r === row && c === col)) return 'blue-cell';
     if (blackCoordinates.some(([r, c]) => r === row && c === col)) return 'black-cell';
-    return '';
+    return ''; 
+  };
+  const getIdByColor = (row, col) => {
+    if (redCoordinates.some(([r, c]) => r === row && c === col)) return 1;
+    if (yellowCoordinates.some(([r, c]) => r === row && c === col)) return 2;
+    if (purpleCoordinates.some(([r, c]) => r === row && c === col)) return 3;
+    if (greenCoordinates.some(([r, c]) => r === row && c === col)) return 4;
+    if (blueCoordinates.some(([r, c]) => r === row && c === col)) return 5;
+    if (blackCoordinates.some(([r, c]) => r === row && c === col)) return 6;
+    return null;
   };
 
   const handleClick = (row, col) => {
@@ -90,6 +99,7 @@ const Grid = () => {
               key={`cell-${rowIndex}-${colIndex}`}
               onClick={() => handleClick(rowIndex, colIndex)}
               className={`grid-cell ${getColorClass(rowIndex, colIndex)}`}
+              id={getIdByColor(rowIndex, colIndex)}
             >
               {circleCoordinates.some(([row, col]) => row === rowIndex && col === colIndex) && (
                 <div className="circle"></div>
