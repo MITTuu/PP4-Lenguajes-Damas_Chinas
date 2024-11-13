@@ -2,7 +2,6 @@ import React from 'react';
 import '../assets/Grid.css';
 
 const Grid = () => {
-  // Crear un array de 18 filas y 26 columnas
   const rows = 17;
   const cols = 25;
 
@@ -25,15 +24,50 @@ const Grid = () => {
     [14, 14], [15, 11], [15, 13], [16, 12]
   ];
 
-  // Función para manejar el clic en una celda
+  //Fichas del juego segun sus coordenadas:
+
+  //Fichas rojas:
+  const redCoordinates = [
+    [0, 12], [1, 11], [1, 13], [2, 10], [2, 12], [2, 14], [3, 9], [3, 11], [3, 13], [3, 15]
+  ];
+  //Fichas amarillas:
+  const yellowCoordinates = [
+    [4, 0], [4, 2], [4, 4], [4, 6], [5, 1], [5, 3], [5, 5], [6, 2], [6, 4], [7, 3], [7, 5]
+  ];
+    //Fichas moradas:
+  const purpleCoordinates = [
+    [9, 3], [10, 2], [10, 4], [11, 1], [11, 3], [11, 5], [12, 0], [12, 2], [12, 4], [12, 6]
+  ];
+    //Fichas verdes:
+  const greenCoordinates = [
+    [13, 9], [13, 11], [13, 13], [13, 15], [14, 10], [14, 12], [14, 14], [15, 11], [15, 13], [16, 12]
+  ];
+    //Fichas azules:
+  const blueCoordinates = [
+    [9,21],[10,22], [11, 19], [11, 21], [11, 23], [10, 20], [11, 22], [12,18], [12, 20], [12, 22], [12, 24]
+  ];
+    //Fichas negras:
+  const blackCoordinates = [
+    [4, 18], [4, 20], [4, 22], [4, 24], [5, 19], [5, 21], [5, 23], [6, 20], [6, 22], [7, 21]
+  ];
+  //Funcion para asinarles el color a cada celda segun su x,y
+  const getColorClass = (row, col) => {
+    if (redCoordinates.some(([r, c]) => r === row && c === col)) return 'red-cell';
+    if (yellowCoordinates.some(([r, c]) => r === row && c === col)) return 'yellow-cell';
+    if (purpleCoordinates.some(([r, c]) => r === row && c === col)) return 'purple-cell';
+    if (greenCoordinates.some(([r, c]) => r === row && c === col)) return 'green-cell';
+    if (blueCoordinates.some(([r, c]) => r === row && c === col)) return 'blue-cell';
+    if (blackCoordinates.some(([r, c]) => r === row && c === col)) return 'black-cell';
+    return '';
+  };
+
   const handleClick = (row, col) => {
     console.log(`Celda seleccionada: (${row}, ${col})`);
   };
 
   return (
     <div className="grid-container">
-      {/* Encabezado de columnas (fila 0) */}
-      <div className="header-cell"></div> {/* Esquina (0,0) vacía */}
+      <div className="header-cell"></div>
       {Array.from({ length: cols }, (_, index) => (
         <div 
           key={`col-header-${index}`} 
@@ -43,24 +77,20 @@ const Grid = () => {
         </div>
       ))}
 
-      {/* Filas del cuerpo de la cuadrícula */}
       {Array.from({ length: rows }, (_, rowIndex) => (
         <React.Fragment key={`row-${rowIndex}`}>
-          {/* Encabezado de filas (columna 0) */}
           <div 
             className={`row-header ${rowIndex === 0 ? 'first-row' : ''}`}
           >
             {rowIndex}
           </div>
 
-          {/* Celdas de la cuadrícula */}
           {Array.from({ length: cols }, (_, colIndex) => (
             <div
               key={`cell-${rowIndex}-${colIndex}`}
               onClick={() => handleClick(rowIndex, colIndex)}
-              className="grid-cell"
+              className={`grid-cell ${getColorClass(rowIndex, colIndex)}`}
             >
-              {/* Verificar si esta celda está en circleCoordinates */}
               {circleCoordinates.some(([row, col]) => row === rowIndex && col === colIndex) && (
                 <div className="circle"></div>
               )}
