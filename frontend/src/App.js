@@ -10,7 +10,6 @@ import Register from './components/Register';
 import Board from './components/Pruebas/Board';
 import Grid from './components/Grid';
 
-
 function App() {
   return (
     <React.Fragment>
