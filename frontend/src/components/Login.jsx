@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { loginUser } from '../services/api';
-import { Link, useNavigate } from 'react-router-dom'; 
+import { Link } from 'react-router-dom'; 
 import Swal from 'sweetalert2';  
 import '../assets/Login.css';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
