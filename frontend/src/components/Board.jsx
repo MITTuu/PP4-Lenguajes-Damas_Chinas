@@ -47,7 +47,7 @@ const Board = ({ numPlayers }) => {
   const getAdjustedPositions = () => {
     const newPositions = { ...initialPositions };
   
-    switch (numPlayers) {
+    switch (3) {
       case 2:
         // Para 2 jugadores, convertimos las posiciones de azul, morado, naranja y verde a blanco
         newPositions.white = [
@@ -114,7 +114,37 @@ const Board = ({ numPlayers }) => {
   const [positions, setPositions] = useState(getAdjustedPositions());
   const [selectedChip, setSelectedChip] = useState(null);
 
+  //Estados estrictamente de movimientos
   const [validMoves, setValidMoves] = useState([]);
+  const [validMovesJumping, setValidMovesJumping] = useState([]);
+
+
+  // Funcion para calcular los saltos de fichas
+  const getValidMovesJumping = (row, col) => {
+    const jumps = [
+      [row + 2, col + 2],   // abajo izquierda
+      [row + 2, col - 2],   // abajo derecha
+      [row - 2, col - 2],   // arriba izquierda
+      [row - 2, col + 2],    // arriba derecha
+      [row, col - 4],        // horizontal izquierda
+      [row, col + 4]       // horizontal derecha
+
+    ];
+  
+      // Filtra las posiciones que están dentro del tablero y son válidas para el salto
+      return jumps.filter(([r, c], index) => {
+
+
+        const intermediateRow = row + (jumps[index][0] - row) / 2;
+        const intermediateCol = col + (jumps[index][1] - col) / 2;
+        return (
+
+          r >= 0 && r < rows && c >= 0 && c < cols && // Dentro del tablero
+          !positions.white.some(([wr, wc]) => wr === intermediateRow && wc === intermediateCol) && // Posicion adyacente con ficha
+          positions.white.some(([wr, wc]) => wr === r && wc === c) // Posicion de destino blanca
+        );
+      });
+    };
 
   // Calcula movimientos válidos para una ficha seleccionada
   const getValidMoves = (row, col) => {
@@ -138,14 +168,18 @@ const Board = ({ numPlayers }) => {
   const handleClick = (row, col, color) => {
     if (selectedChip) {
       // Verifica que la posición sea válida para moverse
-      if (color === 'white' && validMoves.some(([vr, vc]) => vr === row && vc === col)) {
+      if (color === 'white' && (validMoves.some(([vr, vc]) => vr === row && vc === col) ||
+                              validMovesJumping.some(([vr, vc]) => vr === row && vc === col))) {
         const newPositions = { ...positions };
   
         // Remueve y mueve la ficha seleccionada
         newPositions[selectedChip.color] = newPositions[selectedChip.color].filter(
           ([r, c]) => !(r === selectedChip.row && c === selectedChip.col)
         );
-  
+        const isValidJumpMove = validMovesJumping.some(([vr, vc]) => vr === row && vc === col);
+    
+        console.log(`¿Es un movimiento de salto válido? ${isValidJumpMove}`);
+
         newPositions.white = newPositions.white.filter(([r, c]) => !(r === row && c === col));
         newPositions.white.push([selectedChip.row, selectedChip.col]);
   
@@ -153,6 +187,7 @@ const Board = ({ numPlayers }) => {
   
         setPositions(newPositions);
         setValidMoves([]);
+        setValidMovesJumping([]);
         
         // Imprimir las posiciones de todas las fichas en la consola
         console.log("Posiciones actuales de las fichas:");
@@ -163,7 +198,8 @@ const Board = ({ numPlayers }) => {
       setSelectedChip(null);
     } else if (color !== 'white') {
       setSelectedChip({ row, col, color });
-      setValidMoves(getValidMoves(row, col));  
+      setValidMoves(getValidMoves(row, col));
+      setValidMovesJumping(getValidMovesJumping(row, col));  
     }
   };
   
