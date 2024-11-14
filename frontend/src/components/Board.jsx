@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Chip from './Chip';
-import '../assets/Grid.css';
+import '../assets/Board.css';
 
-const Grid = ({ numPlayers = 6 }) => {
+const Board = ({ numPlayers }) => {
   const rows = 17;
   const cols = 25;
 
@@ -88,6 +88,22 @@ const Grid = ({ numPlayers = 6 }) => {
         // Para 6 jugadores, no cambiamos nada, mantenemos las posiciones originales
         break;
       default:
+        // Todas las fichas blancas
+        newPositions.white = [
+          ...newPositions.white,
+          ...newPositions.red,
+          ...newPositions.yellow,
+          ...newPositions.blue,
+          ...newPositions.green,
+          ...newPositions.orange,
+          ...newPositions.purple
+        ];
+        newPositions.red = [];
+        newPositions.yellow = []; 
+        newPositions.blue = [];
+        newPositions.green = [];
+        newPositions.orange = [];
+        newPositions.purple = [];
         break;
     }
   
@@ -98,39 +114,59 @@ const Grid = ({ numPlayers = 6 }) => {
   const [positions, setPositions] = useState(getAdjustedPositions());
   const [selectedChip, setSelectedChip] = useState(null);
 
+  const [validMoves, setValidMoves] = useState([]);
+
+  // Calcula movimientos válidos para una ficha seleccionada
+  const getValidMoves = (row, col) => {
+    const moves = [
+      [row + 1, col + 1],   // abajo izquierda
+      [row + 1, col - 1],   // abajo derecha
+      [row - 1, col - 1],   // arriba izquierda
+      [row - 1, col + 1],   // arriba derecha
+      [row, col - 2],        // horizontal izquierda
+      [row, col + 2]       // horizontal derecha
+    ];
+  
+    // Filtra las posiciones que están dentro del tablero y libres (color 'white')
+    return moves.filter(([r, c]) =>
+      r >= 0 && r < rows && c >= 0 && c < cols &&
+      positions.white.some(([wr, wc]) => wr === r && wc === c)
+    );
+  };
+  
   // Maneja el clic en una celda con ficha
   const handleClick = (row, col, color) => {
     if (selectedChip) {
-      // Si una ficha está seleccionada, verifica que la ficha destino sea blanca
-      if (color === 'white' && selectedChip.color !== 'white') {
+      // Verifica que la posición sea válida para moverse
+      if (color === 'white' && validMoves.some(([vr, vc]) => vr === row && vc === col)) {
         const newPositions = { ...positions };
-
-        // Remueve la ficha del color original de su posición inicial
+  
+        // Remueve y mueve la ficha seleccionada
         newPositions[selectedChip.color] = newPositions[selectedChip.color].filter(
           ([r, c]) => !(r === selectedChip.row && c === selectedChip.col)
         );
-
-        // Mueve la ficha seleccionada a la posición de la ficha blanca
+  
         newPositions.white = newPositions.white.filter(([r, c]) => !(r === row && c === col));
         newPositions.white.push([selectedChip.row, selectedChip.col]);
-
-        // Actualiza la posición de la ficha seleccionada
+  
         newPositions[selectedChip.color].push([row, col]);
-
+  
         setPositions(newPositions);
-
+        setValidMoves([]);
+        
         // Imprimir las posiciones de todas las fichas en la consola
         console.log("Posiciones actuales de las fichas:");
         Object.keys(newPositions).forEach(color => {
           console.log(`${color}: ${JSON.stringify(newPositions[color])}`);
         });
       }
-      setSelectedChip(null); // Reinicia la selección
+      setSelectedChip(null);
     } else if (color !== 'white') {
-      // Almacena solo si la ficha inicial no es blanca
       setSelectedChip({ row, col, color });
+      setValidMoves(getValidMoves(row, col));  
     }
   };
+  
 
   return (
     <div className="grid-container">
@@ -179,4 +215,4 @@ const Grid = ({ numPlayers = 6 }) => {
   );
 };
 
-export default Grid;
+export default Board;
