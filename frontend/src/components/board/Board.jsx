@@ -1,123 +1,138 @@
 import React, { useState } from 'react';
 import { getAdjustedPositions } from './utils/positions';
 import { getValidMoves, getValidMovesJumping } from './utils/moves';
+import { getNextTurn } from './utils/turns';
 import RowHeader from './RowsHeader';
 import ColumnHeader from './ColumnsHeader';
 import Cell from './Cell';
 import '../../assets/Board.css';
 
-const Board = ({ numPlayers = 2 }) => {
-  // Estados iniciales
+const Board = ({ numPlayers = 4 }) => {
   const rows = 17;
   const cols = 25;
-  const [positions, setPositions] = useState(getAdjustedPositions(numPlayers));
+
+  // Genera las posiciones iniciales ajustadas para el número de jugadores
+  const initialPositions = getAdjustedPositions(numPlayers);
+
+  // Determina el primer turno basado en el color de la primera ficha encontrada
+  const initialTurn = Object.keys(initialPositions).find(
+    (color) => color !== 'white' && initialPositions[color].length > 0
+  );
+
+  // Estados iniciales
+  const [positions, setPositions] = useState(initialPositions);
   const [selectedChip, setSelectedChip] = useState(null);
   const [validMoves, setValidMoves] = useState([]);
   const [validMovesJumping, setValidMovesJumping] = useState([]);
   const [highlightedCells, setHighlightedCells] = useState([]);
-  const [hasJumped, setHasJumped] = useState(false);
-  const [originalJumpPosition, setOriginalJumpPosition] = useState(null); // Nueva estado para rastrear posición original
-  //Turnos:
-  const [currentTurn, setCurrentTurn] = useState(0);
-  const initialPositions = getAdjustedPositions(numPlayers);
-  const playerColors = Object.keys(initialPositions).filter(color => color !== 'white' && initialPositions[color].length > 0);
+  const [currentTurn, setCurrentTurn] = useState(initialTurn);
+  const [hasMoved, setHasMoved] = useState(false);
 
   const handleClick = (row, col, color) => {
-    // Permite mover solo la ficha del jugador en turno
-    if (selectedChip && color === 'white') {
-      const isJumpMove = validMovesJumping.some(([vr, vc]) => vr === row && vc === col);
-      
-      // Si ya salto, solo permite movimientos de salto
-      if (hasJumped && !isJumpMove) {
-        return; // No permite move de un salto
+    if (selectedChip) {
+      // Si la posición seleccionada es otra ficha del mismo color y no se ha movido:
+      if (!hasMoved && color === currentTurn && !(row === selectedChip.row && col === selectedChip.col)) {
+        // Cambia la selección a la nueva ficha
+        setSelectedChip({ row, col, color });
+  
+        // Obtiene los nuevos movimientos básicos y de salto
+        const basicMoves = getValidMoves(row, col, rows, cols, positions);
+        const jumpingMoves = getValidMovesJumping(row, col, rows, cols, positions);
+  
+        setValidMoves(basicMoves);
+        setValidMovesJumping(jumpingMoves);
+  
+        // Actualiza las celdas destacadas
+        setHighlightedCells([...basicMoves, ...jumpingMoves].map(([r, c]) => ({ row: r, col: c, borderColor: color })));
+  
+        return; // Sale para evitar otras acciones
       }
-
+  
+      // Verifica que la posición sea válida para moverse
       if (
-        (!hasJumped && validMoves.some(([vr, vc]) => vr === row && vc === col)) ||
-        validMovesJumping.some(([vr, vc]) => vr === row && vc === col)
+        color === 'white' &&
+        (validMoves.some(([vr, vc]) => vr === row && vc === col) ||
+         validMovesJumping.some(([vr, vc]) => vr === row && vc === col))
       ) {
         const newPositions = { ...positions };
-        
-        // Remueve la ficha seleccionada de su posicion original y mueve a la nueva
+  
+        // Remueve y mueve la ficha seleccionada
         newPositions[selectedChip.color] = newPositions[selectedChip.color].filter(
           ([r, c]) => !(r === selectedChip.row && c === selectedChip.col)
         );
-        
+  
+        const isValidJumpMove = validMovesJumping.some(([vr, vc]) => vr === row && vc === col);
+  
+        // Actualiza posiciones
         newPositions.white = newPositions.white.filter(([r, c]) => !(r === row && c === col));
         newPositions.white.push([selectedChip.row, selectedChip.col]);
         newPositions[selectedChip.color].push([row, col]);
-        
-        // Actualiza el estado de posiciones
+  
         setPositions(newPositions);
-
-        if (isJumpMove) {
-          if (!hasJumped) {
-            // Si es el primer salto, guarda la posicion original
-            setOriginalJumpPosition({ row: selectedChip.row, col: selectedChip.col });
-          }
-          setHasJumped(true);
-          
-          // Verifica si hay ms saltos posibles desde la nueva posicion
-          const newJumpingMoves = getValidMovesJumping(row, col, rows, cols, newPositions)
-            .filter(([newRow, newCol]) => {
-              // Filtra los saltos que llevarían de vuelta a la posicion original
-              return !(originalJumpPosition && 
-                     newRow === originalJumpPosition.row && 
-                     newCol === originalJumpPosition.col);
-            });
-////////////////////////////RESTRICCION DE MOVES Y JUMP A PRIGEN////////////////////////////////////////
-          if (newJumpingMoves.length > 0) {
-            // Si hay mas saltos posibles, actualiza los movimientos validos
-            setValidMovesJumping(newJumpingMoves);
-            setValidMoves([]); // No permite movimientos basicos
-            setHighlightedCells(newJumpingMoves.map(([r, c]) => ({ row: r, col: c, borderColor: selectedChip.color })));
-            setSelectedChip({ row, col, color: selectedChip.color }); // Mantiene la ficha seleccionada asi evitamos problemas de selecion multiple
-            return;
+        setHasMoved(true); // Marca que se realizó un movimiento
+  
+        if (isValidJumpMove) {
+          // Comprueba si hay más saltos válidos disponibles desde la nueva posición
+          const jumpingMoves = getValidMovesJumping(row, col, rows, cols, newPositions).filter(
+            ([vr, vc]) => !(vr === selectedChip.row && vc === selectedChip.col) // Excluye la posición anterior
+          );
+  
+          if (jumpingMoves.length > 0) {
+            setValidMovesJumping(jumpingMoves);
+            setValidMoves([]); // No hay movimientos básicos disponibles después de un salto
+            setSelectedChip({ row, col, color: selectedChip.color });
+  
+            // Actualiza las celdas destacadas con el color correcto
+            setHighlightedCells(
+              jumpingMoves.map(([r, c]) => ({ row: r, col: c, borderColor: selectedChip.color }))
+            );
+  
+            return; // No cambia el turno todavía
           }
         }
-
-        // Si no hay más saltos posibles o fue un movimiento normal, limpia todo y pasa el turno
+  
+        // Si no hay más saltos válidos, el turno finaliza
+        setSelectedChip(null);
         setValidMoves([]);
         setValidMovesJumping([]);
         setHighlightedCells([]);
-        setSelectedChip(null);
-        setHasJumped(false);
-        //setOriginalJumpPosition(null); 
-        
-        // Pasa el turno solo si no hay mas saltos posibles
-        if (!isJumpMove || validMovesJumping.length === 0) {
-          setCurrentTurn((currentTurn + 1) % playerColors.length);
-        }
-      }
-    } else if (color === playerColors[currentTurn] && !hasJumped) {
-      // Solo permite seleccionar nueva ficha si no ha saltado
-      setSelectedChip({ row, col, color });
+        setHasMoved(false); // Reinicia el estado de movimiento
+        setCurrentTurn(getNextTurn(currentTurn, positions));
 
+        console.log(newPositions);
+      }
+    } else if (color !== 'white' && color === currentTurn && !hasMoved) {
+      // Selecciona la ficha si es del color del turno actual y no se ha movido
+      setSelectedChip({ row, col, color });
+  
+      // Obtiene los movimientos básicos y de salto
       const basicMoves = getValidMoves(row, col, rows, cols, positions);
       const jumpingMoves = getValidMovesJumping(row, col, rows, cols, positions);
-      
+  
       setValidMoves(basicMoves);
       setValidMovesJumping(jumpingMoves);
+  
+      // Destaca las celdas válidas
       setHighlightedCells([...basicMoves, ...jumpingMoves].map(([r, c]) => ({ row: r, col: c, borderColor: color })));
     }
   };
-
+  
   return (
     <div className="grid-container">
       <div className="header-cell"></div>
       {Array.from({ length: cols }, (_, index) => (
         <ColumnHeader key={index} index={index} />
       ))}
-  
+
       {Array.from({ length: rows }, (_, rowIndex) => (
         <React.Fragment key={`row-${rowIndex}`}>
           <RowHeader rowIndex={rowIndex} />
-  
+
           {Array.from({ length: cols }, (_, colIndex) => {
             const chipColor = Object.keys(positions).find(color =>
               positions[color].some(([row, col]) => row === rowIndex && col === colIndex)
             );
-  
+
             return (
               <Cell
                 key={`cell-${rowIndex}-${colIndex}`}
