@@ -1,25 +1,30 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import Encabezado from './components/Inicio/Encabezado';
+
+import Inicio from './components/Inicio/Inicio';
+import Sala from './components/Inicio/Sala';
+import CrearPartida from './components/Inicio/CrearPartida';
+import UnirsePartida from './components/Inicio/UnirsePartida';
+import Board from './components/board/Board';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
-import Login from './components/Login';
-import Register from './components/Register';
-import Board from './components/board/Board';
-import Inicio from './components/Inicio/Inicio';
 
 function App() {
   return (
     <React.Fragment>
       <Router>
+        <Encabezado />
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
+          <Route path="/" element={<Inicio />} />
           <Route path='/board' element={<Board />} />
-          <Route path='/Inicio' element={<Inicio />} />
+          <Route path='/inicio' element={<Inicio />} />
+          <Route path='/Crear-partida' element={<CrearPartida />}/>
+          <Route path='/unirse' element={<UnirsePartida />}/>
+          <Route path="/sala/:gameCode" element={<Sala />} />
         </Routes>
       </Router>
     </React.Fragment>

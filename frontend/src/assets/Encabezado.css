@@ -1,0 +1,51 @@
+.encabezado {
+  width: 100%; 
+  background-color: #000000;
+  color: #fff;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  height: 60px;
+}
+
+/* Estilos del logo */
+.encabezado .logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+}
+
+.encabezado .logo:hover {
+  transform: scale(1.05); /* Hace que el logo y texto crezcan un poco */
+  color: #ffcc00; /* Cambia el color del texto */
+}
+
+.encabezado .logo-img {
+  width: 40px;
+  height: auto;
+  transition: transform 0.3s ease; /* Aplica una transición suave */
+}
+
+.encabezado .logo:hover .logo-img {
+  transform: scale(1.2); /* Aumenta el tamaño del logo al pasar el cursor */
+}
+
+.encabezado h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+.encabezado .logo:hover h1 {
+  color: #ffcc00; /* Cambia el color del texto cuando se pasa el cursor */
+}
+

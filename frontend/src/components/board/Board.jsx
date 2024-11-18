@@ -7,7 +7,7 @@ import ColumnHeader from './ColumnsHeader';
 import Cell from './Cell';
 import '../../assets/Board.css';
 
-const Board = ({ numPlayers = 4 }) => {
+const Board = ({ numPlayers = 6 }) => {
   const rows = 17;
   const cols = 25;
 
