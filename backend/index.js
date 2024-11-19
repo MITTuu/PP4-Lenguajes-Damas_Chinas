@@ -1,4 +1,7 @@
+const { getAdjustedPositions } = require("./src/game/utils/positions");
+
 const { Server } = require("socket.io");
+
 
 const io = new Server(5000, {
   cors: {
@@ -112,8 +115,32 @@ io.on("connection", (socket) => {
     if (availableGames.length > 0) {
         io.emit("gamesUpdated", availableGames);
     }
-});
+  });
   
+  socket.on("startGame", (gameCode, callback) => {
+    const game = games.find(g => g.gameCode === gameCode);
+    
+    if (!game) {
+      return callback({ success: false, message: "Sala no encontrada" });
+    }
+  
+    if (game.players.length < game.numPlayers) {
+      return callback({ success: false, message: "No hay suficientes jugadores para iniciar el juego" });
+    }
+  
+    // Cambiar el estado del juego a iniciado
+    game.isStarted = true;
+  
+    const adjustedPositions = getAdjustedPositions(game.numPlayers);
+
+    console.log(adjustedPositions);
+
+    // Emitir a todos los jugadores en la sala que el juego ha comenzado
+    io.to(gameCode).emit("gameStarted", { gameCode, adjustedPositions });
+  
+    callback({ success: true });
+  });
+
 
   socket.on("disconnect", () => {
     console.log("Jugador desconectado:", socket.id);

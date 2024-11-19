@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Form } from "react-bootstrap";
-import { socketManager } from './socketManager';
+import { socketManager } from '../../services/socketManager';
 import "../../assets/crearPartida.css";
 
 const CrearPartida = () => {

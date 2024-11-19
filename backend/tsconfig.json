@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
-      "module": "NodeNext",
-      "moduleResolution": "NodeNext",
-      "baseUrl": "src",
-      "outDir": "dist",
-      "sourceMap": true,
-      "noImplicitAny": true,
+    "target": "ES6",                     // Compila a ES6
+    "module": "CommonJS",                // Usa CommonJS para compatibilidad con Node.js
+    "outDir": "./dist",                  // Carpeta de salida para los archivos compilados
+    "rootDir": "./src",                  // Carpeta raíz del código fuente
+    "strict": true,                      // Activa todas las comprobaciones estrictas
+    "esModuleInterop": true,             // Permite interoperabilidad con ESModules
+    "skipLibCheck": true,                // Omite la verificación de tipos en los archivos de definición de biblioteca
   },
-  "include": ["src/**/*", "src/controllers"],
+  "include": ["src"],                    // Incluir solo la carpeta `src` en la compilación
+  "exclude": ["node_modules", "dist"]   // Excluir `node_modules` y `dist` de la compilación
 }

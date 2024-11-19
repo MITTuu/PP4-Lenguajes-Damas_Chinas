@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { socketManager } from './socketManager';
+import { socketManager } from '../../services/socketManager';
 
 const UnirsePartida = () => {
     const navigate = useNavigate();

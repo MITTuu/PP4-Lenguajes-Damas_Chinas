@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
-import { socketManager } from './socketManager';
+import { socketManager } from '../../services/socketManager';
 import "../../assets/Sala.css";
 
 const Sala = () => {
@@ -16,6 +16,7 @@ const Sala = () => {
     const [creatorSocketId, setCreatorSocketId] = useState(initialGameInfo?.creator || null);
     const [currentPlayerSocketId, setCurrentPlayerSocketId] = useState("");
     const [error, setError] = useState("");
+
     useEffect(() => {
         const nickname = localStorage.getItem("nickname");
         if (!nickname) {
@@ -65,9 +66,18 @@ const Sala = () => {
                 setError(errorMessage);
             });
 
-            socket.on("gameStarted", (startedGameCode) => {
-                if (startedGameCode === gameCode) {
-                    navigate(`/juego/${gameCode}`);
+            socket.on("gameStarted", (data) => {
+                const { gameCode, adjustedPositions, players } = data;
+              
+                if (gameCode === gameCode) {
+                  players.forEach(player => {
+                    console.log(`Jugador: ${player.nickname}, Color: ${player.color}`);
+                  });
+                
+                  console.log(adjustedPositions);
+
+                  // Aquí navegas a la página del juego con el gameCode
+                  navigate(`/juego/${gameCode}`);
                 }
             });
         };
@@ -101,9 +111,11 @@ const Sala = () => {
     };
 
     const handleStartGame = () => {
+        console.log("Iniciando juego...");
         const socket = socketManager.getSocket();
         if (socket && isGameStarted && isCreator()) {
             socket.emit("startGame", gameCode, (response) => {
+                console.log(response);
                 if (!response.success) {
                     setError(response.message || "No se pudo iniciar el juego");
                 }
@@ -166,7 +178,9 @@ const Sala = () => {
 
                     {!isGameStarted && (
                         <p className="waiting-message">
-                            Esperando más jugadores... ({players.length}/{gameDetails.numPlayers})
+                            {players.length === gameDetails.numPlayers
+                                ? "Esperando a que el creador inicie la partida..."
+                                : `Esperando más jugadores... (${players.length}/${gameDetails.numPlayers})`}
                         </p>
                     )}
                 </>

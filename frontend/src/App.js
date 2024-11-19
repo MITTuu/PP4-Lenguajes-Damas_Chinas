@@ -20,7 +20,7 @@ function App() {
         <Encabezado />
         <Routes>
           <Route path="/" element={<Inicio />} />
-          <Route path='/board' element={<Board />} />
+          <Route path='/juego/:gameCode' element={<Board />} />
           <Route path='/inicio' element={<Inicio />} />
           <Route path='/Crear-partida' element={<CrearPartida />}/>
           <Route path='/unirse' element={<UnirsePartida />}/>
