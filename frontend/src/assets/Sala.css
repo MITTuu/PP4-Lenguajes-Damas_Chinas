@@ -26,6 +26,11 @@
         color: #ffcc00;
         text-shadow: 2px 2px 0 #000, 4px 4px 0 #ff5733;
         margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: center;
+        gap: 0.1rem;
+        display: inline-block;
+        animation: wave 1.5s infinite ease-in-out;
     }
 }
 
