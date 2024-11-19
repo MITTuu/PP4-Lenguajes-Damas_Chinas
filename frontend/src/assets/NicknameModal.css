@@ -1,51 +1,81 @@
-/* Fondo semi-transparente que cubre la pantalla */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-/* Estilo del contenido del modal */
+/* Estilo del Modal */
 .modal-content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  min-width: 300px;
+    background-color: rgba(0, 0, 0, 0.85); /* Fondo oscuro */
+    color: #fff;
+    border: 3px solid #ffcc00; /* Bordes dorados */
+    border-radius: 8px;
+    text-align: center;
+    font-family: 'Press Start 2P', cursive;
 }
 
-.modal-content h2 {
-  margin-bottom: 20px;
+.modal-header {
+    border-bottom: 2px solid #ffcc00;
 }
 
-.modal-content input {
-  padding: 10px;
-  font-size: 1rem;
-  margin-bottom: 10px;
-  width: 100%;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+.modal-title {
+    font-size: 1.5rem;
+    color: #ffcc00;
+    text-shadow: 2px 2px 0 #0b025a, 4px 4px 0 #91c3ff;
 }
 
-.modal-content button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 100%;
+.modal-body {
+    padding: 20px;
+    font-size: 1rem;
+    color: #ffffff;
 }
 
-.modal-content button:hover {
-  background-color: #0056b3;
+.modal-footer {
+    border-top: 2px solid #ffcc00;
+}
+
+/* Estilo del campo de texto */
+form {
+    margin-top: 15px;
+}
+
+form input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    color: #333;
+    background-color: #ffffff;
+    border: 2px solid #ffcc00;
+    border-radius: 8px;
+    text-align: center;
+    font-family: 'Press Start 2P', cursive;
+    box-shadow: 4px 4px 0 #000;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+form input[type="text"]:focus {
+    outline: none;
+    border-color: #0066ff;
+    box-shadow: 6px 6px 0 #000;
+}
+
+/* Estilo del botón */
+button {
+    background-color: #0066ff;
+    color: #fff;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0 #000;
+    margin-top: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    transform: translateY(-5px);
+    box-shadow: 6px 6px 0 #000;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
