@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { Game, CreateGameData, JoinGameData } from './types/game';
+import { Game, CreateGameData, JoinGameData } from '../types/game';
 
 let games: Game[] = [];
 
