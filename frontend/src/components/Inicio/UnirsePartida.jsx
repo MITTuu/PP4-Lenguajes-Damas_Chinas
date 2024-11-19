@@ -72,7 +72,8 @@ const UnirsePartida = () => {
                 console.log("Salas disponibles recibidas:", response.games);
                 setRooms(response.games);
             } else {
-                setError("Error al obtener las salas disponibles");
+                console.log("No hay salas disponibles");
+                setRooms([]);
             }
             setIsLoading(false);
         });
@@ -95,21 +96,23 @@ const UnirsePartida = () => {
         setJoiningGame(true);
         setError(null);
 
+        // Al unirse, guardamos la información del juego en localStorage
+        const gameInfo = rooms.find(room => room.gameCode === gameCode);
+        if (gameInfo) {
+            localStorage.setItem('currentGame', JSON.stringify(gameInfo));
+        }
+
         socket.emit("joinGame", { gameCode, nickname }, (response) => {
+            setJoiningGame(false);
             if (response.success) {
+                // Guardamos la información actualizada del juego
+                localStorage.setItem('currentGame', JSON.stringify(response.game));
                 navigate(`/sala/${gameCode}`);
             } else {
                 setError(response.message || "No se pudo unir a la partida");
-                setJoiningGame(false);
+                localStorage.removeItem('currentGame');
             }
         });
-
-        setTimeout(() => {
-            if (joiningGame) {
-                setJoiningGame(false);
-                setError("Tiempo de espera agotado");
-            }
-        }, 5000);
     };
 
     return (
@@ -147,7 +150,9 @@ const UnirsePartida = () => {
                                 <p className="room-status">
                                     Jugadores: {room.playersJoined}/{room.numPlayers}
                                 </p>
-                                <p className="room-creator">Creador: {room.creator}</p>
+                                <p className="room-creator">  
+                                    Creador: {room.players?.[0]?.nickname || "Desconocido"}
+                                </p>
                                 <p className="game-type">
                                     Tipo: {room.gameType === "vsTiempo" ? "Vs Tiempo" : "Normal"}
                                     {room.gameTime && ` (${room.gameTime} min)`}

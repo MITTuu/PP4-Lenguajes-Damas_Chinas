@@ -7,13 +7,15 @@ import "../../assets/Sala.css";
 const Sala = () => {
     const { gameCode } = useParams();
     const navigate = useNavigate();
-    const [players, setPlayers] = useState([]);
-    const [gameDetails, setGameDetails] = useState(null);
+    // ObtIENE la información inicial del localStorage
+    const initialGameInfo = JSON.parse(localStorage.getItem('currentGame') || 'null');
+    
+    const [players, setPlayers] = useState(initialGameInfo?.players || []);
+    const [gameDetails, setGameDetails] = useState(initialGameInfo);
     const [isGameStarted, setIsGameStarted] = useState(false);
-    const [creatorSocketId, setCreatorSocketId] = useState(null);
+    const [creatorSocketId, setCreatorSocketId] = useState(initialGameInfo?.creator || null);
     const [currentPlayerSocketId, setCurrentPlayerSocketId] = useState("");
     const [error, setError] = useState("");
-
     useEffect(() => {
         const nickname = localStorage.getItem("nickname");
         if (!nickname) {
