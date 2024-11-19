@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* Contenedor principal */
+.unirse-partida-container {
+    text-align: center;
+    position: relative;
+    min-height: 100vh; 
+    width: 100vw; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Press Start 2P', cursive;
+    overflow: hidden;
+    background-image: url('./images/background.png'); /* Ruta de la imagen */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 20px;
+}
+
+/* Título principal */
+.unirse-title {
+    font-size: 2.5rem;
+    color: #ffcc00;
+    text-shadow: 2px 2px 0 #000, 4px 4px 0 #ff5733;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.1rem;
+    display: inline-block;
+    animation: wave 1.5s infinite ease-in-out;
+}
+
+/* Botón de refrescar */
+.refresh-button {
+    background-color: #0066ff;
+    color: #fff;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0 #000;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.refresh-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 6px 6px 0 #000;
+}
+
+.refresh-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Mensaje de error */
+.error-message {
+    background-color: rgba(255, 0, 0, 0.8);
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    position: relative;
+    width: 90%;
+    max-width: 400px;
+    text-align: left;
+}
+
+.close-error {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.2rem;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    cursor: pointer;
+}
+
+/* Lista de salas */
+.rooms-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 20px;
+}
+
+.room-card {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: left;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.room-info h3 {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.room-info p {
+    font-size: 1rem;
+    color: #555;
+    margin: 5px 0;
+}
+
+/* Botón de unirse */
+.join-button {
+    background-color: #28a745;
+    color: #fff;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0 #000;
+    transition: transform 0.2s, box-shadow 0.2s;
+    align-self: flex-end;
+}
+
+.join-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 6px 6px 0 #000;
+}
+
+.join-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Sin salas disponibles */
+.no-rooms {
+    font-size: 1.2rem;
+    color: #fff;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Carga animada */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.loading-container p {
+    font-size: 1rem;
+    color: #fff;
+    margin-top: 10px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

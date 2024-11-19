@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* Contenedor principal */
+.sala-container {
+    text-align: center;
+    position: relative;
+    min-height: 100vh; 
+    width: 100vw; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Press Start 2P', cursive;
+    overflow: hidden;
+    background-image: url('./images/background.png'); /* Ruta de la imagen */
+    background-size: cover; /* Asegura que la imagen cubra todo el contenedor */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+}
+
+/* Título principal */
+
+.sala-container{
+    h1 {
+        font-size: 2.5rem;
+        color: #ffcc00;
+        text-shadow: 2px 2px 0 #000, 4px 4px 0 #ff5733;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: center;
+        gap: 0.1rem;
+        display: inline-block;
+        animation: wave 1.5s infinite ease-in-out;
+    }
+}
+
+/* Información de la sala */
+p {
+    font-size: 1rem;
+    color: #fff;
+    margin: 10px 0;
+}
+
+/* Lista de jugadores */
+.players-list {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: left;
+    width: 90%;
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.players-list h3 {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.players-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.player-item {
+    font-size: 1rem;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    color: #333;
+}
+
+.player-item:last-child {
+    border-bottom: none;
+}
+
+/* Destacar al creador */
+.player-item.creator {
+    font-weight: bold;
+    color: #0066ff;
+}
+
+/* Botón para iniciar juego */
+.start-game-button {
+    margin-top: 20px;
+    background-color: #28a745;
+    color: #fff;
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0 #000;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.start-game-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 6px 6px 0 #000;
+}
+
+.start-game-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Mensaje de espera */
+.waiting-message {
+    font-size: 1rem;
+    color: #ffcc00;
+    margin-top: 15px;
+}
+
+/* Contenedor de carga */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-container p {
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.spinner {
+    margin-top: 10px;
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Botón de volver */
+button {
+    background-color: #0066ff;
+    color: #fff;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0 #000;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 20px;
+}
+
+button:hover {
+    transform: translateY(-5px);
+    box-shadow: 6px 6px 0 #000;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
