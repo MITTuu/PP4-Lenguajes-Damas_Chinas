@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socketManager } from '../../services/socketManager';
-import '../../assets/unirsePartida.css';
+import "../../assets/unirsePartida.css";
+
 const UnirsePartida = () => {
     const navigate = useNavigate();
     const [rooms, setRooms] = useState([]);
