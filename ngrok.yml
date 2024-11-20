@@ -3,7 +3,7 @@ authtoken: 2opXQVTFsJ98cbDGUUdecOYNfML_5ujpyzniN3GY8ArCczxKr
 
 tunnels:
   backend:
-    addr: 8080
+    addr: 5000
     proto: http
   frontend:
     addr: 3000
