@@ -1,0 +1,21 @@
+.chip {
+  width: 39px;
+  height: 39px;
+  aspect-ratio: 1 / 1; 
+  border-radius: 50%; 
+  display: inline-block;
+  padding: 0;
+  box-sizing: border-box;
+  border: 3px solid;
+  cursor: pointer;
+  overflow: hidden; 
+
+  border-style: solid;
+  box-shadow: none;
+  transition: none; 
+}
+
+.chip:hover {
+  transform: none; 
+  box-shadow: none;
+}

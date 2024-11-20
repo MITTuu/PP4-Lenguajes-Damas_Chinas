@@ -9,7 +9,7 @@ const Inicio = () => {
 
     const [nickname, setNickname] = useState('');
     const [showModal, setShowModal] = useState(false);
-    const [action, setAction] = useState(''); // Para indicar la acción (crear o unirse)
+    const [action, setAction] = useState('');
 
     const handleCrearPartida = () => {
         if (!nickname) {

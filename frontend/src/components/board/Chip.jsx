@@ -1,17 +1,14 @@
 import React from 'react';
+import styles from '../../assets/Chip.module.css';
 
 const Chip = ({ id, color, borderColor, onClick }) => {
   return (
     <button 
-      className="chip" 
+      className={styles.chip} 
       id={`chip-${id}`} 
       style={{
         backgroundColor: color,
-        width: '39px',
-        height: '39px',
-        borderRadius: '50%',
         border: `3px solid ${borderColor || 'black'}`, 
-        cursor: 'pointer',
       }}
       onClick={onClick} 
     />

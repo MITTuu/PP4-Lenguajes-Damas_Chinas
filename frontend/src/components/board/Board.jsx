@@ -1,60 +1,130 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import RowHeader from "./RowsHeader";
 import ColumnHeader from "./ColumnsHeader";
 import Cell from "./Cell";
 import "../../assets/Board.css";
-import { socketManager } from '../../services/socketManager';
+import { socketManager } from "../../services/socketManager";
 
-const Board = ({ gameCode }) => {
+import { getValidMoves, getValidMovesJumping } from './utils/moves';
+
+const Board = () => {
+  const { gameCode } = useParams();
   const rows = 17;
   const cols = 25;
 
-  // Estados para las posiciones y celdas destacadas
+  // Estados para las posiciones, celdas resaltadas y estado de carga
   const [positions, setPositions] = useState({});
+  const [selectedChip, setSelectedChip] = useState(null);
+  const [validMoves, setValidMoves] = useState([]);
+  const [validMovesJumping, setValidMovesJumping] = useState([]);
   const [highlightedCells, setHighlightedCells] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const socket = socketManager.getSocket();
 
-    // Asegurarse de que el socket esté conectado
+    // Verificar si el socket está conectado, si no, conectarse
     if (!socketManager.isUserConnected()) {
       socketManager.connect();
     }
 
-    // Escuchar las actualizaciones del estado del juego desde el backend
-    socket.on("gameStateUpdate", (gameState) => {
-      if (gameState.gameCode === gameCode) {
-        setPositions(gameState.positions); // Actualizar posiciones
-      }
-    });
+    // Verificar si el socket está disponible y conectado antes de emitir el evento
+    if (socket && socket.connected) {
+      // Solicitar el estado del juego al backend
+      socket.emit("getGameState", gameCode, (response) => {
+        if (response.success) {
+          setPositions(response.game.positions);
+        } else {
+          console.error("Error al obtener el estado del juego:", response.message);
+        }
+        setIsLoading(false);
+      });
 
-    // Escuchar las celdas válidas para moverse
-    socket.on("validMoves", (validMoves) => {
-      setHighlightedCells(
-        validMoves.map(([row, col]) => ({
-          row,
-          col,
-          borderColor: "yellow",
-        }))
-      );
-    });
+      // Escuchar la actualización del estado del juego
+      socket.on("gameStateUpdated", (data) => {
+        if (data && data.newPositions) {
+          setPositions(data.newPositions); 
+        }
+      });
 
-    // Limpiar los listeners cuando se desmonte el componente
+    } else {
+      console.error("El socket no está disponible o no está conectado");
+    }
+
+    // Limpiar los listeners cuando el componente se desmonte
     return () => {
-      socket.off("gameStateUpdate");
-      socket.off("validMoves");
+      if (socket) {
+        socket.off("gameState");
+        socket.off("gameStateUpdated");
+      }
     };
   }, [gameCode]);
 
-  // Manejar el clic en una celda
-  const handleClick = (row, col, chipColor) => {
+  const handleClick = (row, col, color) => {
     const socket = socketManager.getSocket();
-
-    if (chipColor) {
-      // Enviar al backend la acción del jugador
-      socket.emit("playerMove", { gameCode, row, col });
+  
+    if (!socket || !socket.connected) {
+      console.error("El socket no está disponible o no está conectado");
+      return;
     }
-  };
+  
+    if (selectedChip) {
+      // Verifica si el destino es válido (fichas blancas)
+      if (
+        color === "white" &&
+        (validMoves.some(([vr, vc]) => vr === row && vc === col) ||
+         validMovesJumping.some(([vr, vc]) => vr === row && vc === col))
+      ) {
+        // Emite el movimiento al backend
+        socket.emit(
+          "validateMove",
+          {
+            gameCode,
+            fromRow: selectedChip.row,
+            fromCol: selectedChip.col,
+            toRow: row,
+            toCol: col,
+            chipColor: selectedChip.color,
+          },
+          (response) => {
+            if (response.success) {
+              console.log("Movimiento realizado con éxito");
+              // Actualiza las posiciones en el estado
+              setPositions(response.newPositions);
+              setSelectedChip(null);
+              setValidMoves([]);
+              setValidMovesJumping([]);
+              setHighlightedCells([]);
+            } else {
+              console.error("Movimiento inválido:", response.message);
+            }
+          }
+        );
+      } else {
+        console.error("Movimiento inválido");
+      }
+    } else if (color !== "white") {
+      // Seleccionar una ficha del color del jugador
+      setSelectedChip({ row, col, color });
+  
+      // Calcula los movimientos válidos
+      const basicMoves = getValidMoves(row, col, rows, cols, positions);
+      const jumpingMoves = getValidMovesJumping(row, col, rows, cols, positions);
+      
+      console.log("basicos: ", basicMoves);
+      console.log("saltos: ", jumpingMoves);
+
+      setValidMoves(basicMoves);
+      setValidMovesJumping(jumpingMoves);
+      setHighlightedCells([...basicMoves, ...jumpingMoves].map(([r, c]) => ({ row: r, col: c })));
+    }
+  };   
+
+  // Mostrar el indicador de carga si no hemos obtenido el estado
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="grid-container">
@@ -69,7 +139,9 @@ const Board = ({ gameCode }) => {
 
           {Array.from({ length: cols }, (_, colIndex) => {
             const chipColor = Object.keys(positions).find((color) =>
-              positions[color]?.some(([row, col]) => row === rowIndex && col === colIndex)
+              positions[color]?.some(
+                ([row, col]) => row === rowIndex && col === colIndex
+              )
             );
 
             return (

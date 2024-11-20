@@ -67,19 +67,12 @@ const Sala = () => {
             });
 
             socket.on("gameStarted", (data) => {
-                const { gameCode, adjustedPositions, players } = data;
-              
-                if (gameCode === gameCode) {
-                  players.forEach(player => {
-                    console.log(`Jugador: ${player.nickname}, Color: ${player.color}`);
-                  });
-                
-                  console.log(adjustedPositions);
-
-                  // Aquí navegas a la página del juego con el gameCode
-                  navigate(`/juego/${gameCode}`);
+                const { gameCode } = data;
+            
+                if (gameCode) {
+                    navigate(`/juego/${gameCode}`);
                 }
-            });
+            });          
         };
 
         setupSocketListeners();
