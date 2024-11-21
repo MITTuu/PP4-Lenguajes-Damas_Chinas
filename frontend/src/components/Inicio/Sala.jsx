@@ -7,7 +7,7 @@ import "../../assets/Sala.css";
 const Sala = () => {
     const { gameCode } = useParams();
     const navigate = useNavigate();
-    // ObtIENE la información inicial del localStorage
+    // Obtiene la información inicial del localStorage
     const initialGameInfo = JSON.parse(localStorage.getItem('currentGame') || 'null');
     
     const [players, setPlayers] = useState(initialGameInfo?.players || []);
@@ -17,8 +17,7 @@ const Sala = () => {
     const [currentPlayerSocketId, setCurrentPlayerSocketId] = useState("");
     const [error, setError] = useState("");
     const [isExpired, setIsExpired] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(60); // Tiempo restante en segundos
-
+    const [timeLeft, setTimeLeft] = useState(180); // Tiempo restante en segundos
 
     useEffect(() => {
         const nickname = localStorage.getItem("nickname");
@@ -34,7 +33,7 @@ const Sala = () => {
         const socket = socketManager.getSocket();
         
         const setupSocketListeners = () => {
-            // Obtenien información inicial del juego
+            // Obtiene información inicial del juego
             socket.emit("getGameInfo", gameCode, (response) => {
                 if (response.success) {
                     updateGameState(response.game);
@@ -75,7 +74,7 @@ const Sala = () => {
                 if (gameCode) {
                     navigate(`/juego/${gameCode}`);
                 }
-            });          
+            });
         };
 
         socket.on("allGamesClosed", () => {
@@ -86,8 +85,6 @@ const Sala = () => {
 
         setupSocketListeners();
 
-
-
         // Temporizador para manejar la expiración de la sala
         const countdownInterval = setInterval(() => {
             setTimeLeft((prevTime) => {
@@ -96,7 +93,9 @@ const Sala = () => {
             });
         }, 1000);
 
-        const expirationTime = gameDetails?.expirationTime || 30; // Valor de expiración desde los detalles del juego
+        // Establece el tiempo de expiración a 180 segundos (3 minutos)
+        const expirationTime = 180; // 3 minutos en segundos
+
         const expirationTimeout = setTimeout(() => {
             setIsExpired(true);
             clearInterval(countdownInterval); // Detener el intervalo cuando la sala expire
