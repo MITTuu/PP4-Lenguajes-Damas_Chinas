@@ -6,27 +6,30 @@ class SocketManager {
         this.socket = null;
         this.nickname = null;
         this.isConnected = false;
+        // Agrega esta línea para determinar el entorno
+        this.isProduction = process.env.NODE_ENV === 'production';
     }
 
     connect() {
         if (this.socket) {
-            // Si ya existe una conexión, la cerramos
             this.disconnect();
         }
-
+    
         this.nickname = localStorage.getItem("nickname");
-        
-        // Crear nueva conexión
-        this.socket = io("http://localhost:5000", {
+    
+        // URL de Ngrok
+        const socketUrl = 'https://8bdd-201-202-14-16.ngrok-free.app'; // Sólo URL de Ngrok
+    
+        this.socket = io(socketUrl, {
             auth: {
                 nickname: this.nickname
             },
+            transports: ['websocket'],
             reconnection: true,
             reconnectionAttempts: 5,
             reconnectionDelay: 1000
         });
-        
-
+    
         this.setupEventListeners();
     }
 

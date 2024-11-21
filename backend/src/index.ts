@@ -11,6 +11,9 @@ const io = new Server(5000, {
 // Lista de juegos en memoria
 let games: Game[] = [];
 
+
+
+
 // Obtener salas disponibles
 const getAvailableGames = (): Game[] =>
   games.filter((game) => !game.isStarted && game.playersJoined < game.numPlayers);
@@ -65,6 +68,20 @@ io.on("connection", (socket: Socket) => {
       }
     }
   );
+
+
+  // Evento para cerrar todos los juegos
+  socket.on("closeAllGames", () => {
+    console.log("Cerrando todos los juegos...");
+
+    // Eliminar todos los juegos
+    games = [];
+
+    // Notificar a todos los clientes que se han cerrado todos los juegos
+    io.emit("gamesUpdated", []);
+
+    console.log("Todos los juegos han sido cerrados.");
+  });
 
   // Obtener salas disponibles
   socket.on("getAvailableGames", (callback: (response: { success: boolean; message?: string; games?: Game[] }) => void) => {
