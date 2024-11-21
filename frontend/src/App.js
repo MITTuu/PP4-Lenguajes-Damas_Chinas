@@ -7,6 +7,7 @@ import Inicio from './components/Inicio/Inicio';
 import Sala from './components/Inicio/Sala';
 import CrearPartida from './components/Inicio/CrearPartida';
 import UnirsePartida from './components/Inicio/UnirsePartida';
+import VerRanking from './components/Inicio/VerRanking';
 import Board from './components/board/Board';
 
 import 'bootstrap/dist/css/bootstrap.css';
@@ -25,6 +26,7 @@ function App() {
           <Route path='/Crear-partida' element={<CrearPartida />}/>
           <Route path='/unirse' element={<UnirsePartida />}/>
           <Route path="/sala/:gameCode" element={<Sala />} />
+          <Route path="/ranking" element={<VerRanking />} />
         </Routes>
       </Router>
     </React.Fragment>

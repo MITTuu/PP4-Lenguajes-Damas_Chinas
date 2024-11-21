@@ -39,6 +39,10 @@ const Inicio = () => {
         }
     };
 
+    const handleVerRanking = () => {
+        navigate("/ranking");
+    };
+
     return (
         <div className="inicio-container">
             <div className="inicio-background"></div>
@@ -52,7 +56,7 @@ const Inicio = () => {
             <div className="inicio-options">
                 <button className="inicio-button" onClick={handleCrearPartida}>Crear partida</button>
                 <button className="inicio-button" onClick={handleUnirseAPartida}>Unirse al juego</button>
-                <button className="inicio-button">Ver ranking</button>
+                <button className="inicio-button" onClick={handleVerRanking}>Ver ranking</button>
             </div>
             <NicknameModal 
                 onAuthenticate={handleAuthenticate}

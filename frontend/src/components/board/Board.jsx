@@ -53,7 +53,8 @@ const Board = () => {
             gameId: game.gameCode,
             winner: game.winner,
             gameType: game.gameType,
-            creator: game.creatorName
+            creator: game.creatorName,
+            players: game.players
         };
 
         console.log(rankingData);
