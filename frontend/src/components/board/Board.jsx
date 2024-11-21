@@ -5,7 +5,6 @@ import ColumnHeader from "./ColumnsHeader";
 import Cell from "./Cell";
 import "../../assets/Board.css";
 import { socketManager } from "../../services/socketManager";
-
 import { getValidMoves, getValidMovesJumping } from './utils/moves';
 
 const Board = () => {
@@ -48,6 +47,18 @@ const Board = () => {
         }
       });
 
+      // Escuchar la actualización del estado del juego
+      socket.on("Winner", ({ game }) => {
+        const rankingData = {
+            gameId: game.gameCode,
+            winner: game.winner,
+            gameType: game.gameType,
+            creator: game.creatorName
+        };
+
+        console.log(rankingData);
+      });
+
     } else {
       console.error("El socket no está disponible o no está conectado");
     }
@@ -57,6 +68,7 @@ const Board = () => {
       if (socket) {
         socket.off("gameState");
         socket.off("gameStateUpdated");
+        socket.off('Winner');
       }
     };
   }, [gameCode]);
@@ -98,6 +110,10 @@ const Board = () => {
               setHighlightedCells([]);
             } else {
               console.error("Movimiento inválido:", response.message);
+              setSelectedChip(null);
+              setValidMoves([]);
+              setValidMovesJumping([]);
+              setHighlightedCells([]);
             }
           }
         );

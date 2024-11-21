@@ -8,6 +8,7 @@ export interface Game {
   gameCode: string;
   numPlayers: number;
   creator: string;
+  creatorName: string;
   players: Player[];
   playersJoined: number;
   gameType?: string;
@@ -15,6 +16,7 @@ export interface Game {
   isStarted: boolean;
   positions?: Record<string, [number, number][]>;
   turn?: string;
+  winner?: string;
 }
 
 export interface GameConfig {

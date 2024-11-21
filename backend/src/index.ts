@@ -1,11 +1,49 @@
 import { Server, Socket } from "socket.io";
 const { getAdjustedPositions } = require("./game/utils/positions");
+const { checkWinner } = require("./game/utils/checkWin");
+import { postRanking } from './services/api';
 import { Game, GameConfig, Player } from "./types/gameTypes";
 
-const io = new Server(5000, {
+import mongoose from "mongoose";
+import router from './router';
+
+import express from 'express';
+import http from 'http';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import compression from 'compression';
+import cors from 'cors';
+
+
+const app = express();
+app.use(cors({
+  credentials: true,
+}));
+app.use(compression());
+app.use(cookieParser());
+app.use(bodyParser.json());
+
+
+const MONGO_URL = 'mongodb+srv://mittuu:BxTmQw8MZ7HT94YG@cluster0.frjhv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+
+const connectToMongo = async () => {
+  try {
+      await mongoose.connect(MONGO_URL);
+      console.log('Conectado a MongoDB exitosamente');
+  } catch (error) {
+      console.error('Error de conexión a MongoDB:', error);
+      process.exit(1); // Salir del proceso si falla la conexión
+  }
+};
+
+// Crea el servidor HTTP
+const server = http.createServer(app);
+
+// Crear instancia de Socket.IO
+const io = new Server(server, {
   cors: {
-    origin: "*",
-  },
+    origin: "*", // Permite todas las conexiones
+  }
 });
 
 // Lista de juegos en memoria
@@ -48,6 +86,7 @@ io.on("connection", (socket: Socket) => {
         gameCode,
         numPlayers,
         creator: socket.id,
+        creatorName: creator,
         players: [{ id: socket.id, nickname: creator }],
         playersJoined: 1,
         gameType,
@@ -213,19 +252,41 @@ io.on("connection", (socket: Socket) => {
       ([row, col]) => !(row === toRow && col === toCol)
     );
     game.positions.white.push([fromRow, fromCol]);
-  
+
     // Pasar al siguiente turno
     const currentIndex = game.players.findIndex((p) => p.nickname === game.turn);
     const nextIndex = (currentIndex + 1) % game.players.length;
     game.turn = game.players[nextIndex].nickname;
-  
+
     io.to(gameCode).emit("gameStateUpdated", { newPositions: game.positions, nextTurn: game.turn });
+
+    // Chequear si hay ganador
+    const winnerColor = checkWinner(game.positions);
+
+    if (winnerColor) {
+      game.winner = player.nickname;
+
+      const rankingData = {
+        gameId: game.gameCode,
+        winner: game.winner,
+        gameType: game.gameType || "Indefinido",
+        creator: game.creatorName
+    };
+
+    postRanking(rankingData).then((response) => {
+      if (response.success) {
+        console.log('Ranking guardado:', response);
+      } else {
+        console.log('Error guardando el ranking:', response.message);
+      }
+    });
+
+    io.to(gameCode).emit("Winner", { game: game });
+    }
 
     // Confirmar el movimiento al cliente
     callback({ success: true, newPositions: game.positions, nextTurn: game.turn });
   });
-  
-  
   
   // Desconexión del jugador
   socket.on("disconnect", () => {
@@ -248,3 +309,12 @@ io.on("connection", (socket: Socket) => {
     }
   });
 });
+
+// Conexión a MongoDB y luego iniciar el servidor
+connectToMongo().then(() => {
+  server.listen(5000, () => {
+    console.log('Servidor corriendo en http://localhost:5000');
+  });
+});
+
+app.use('/', router());
