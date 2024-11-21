@@ -5,7 +5,7 @@ import ColumnHeader from "./ColumnsHeader";
 import Cell from "./Cell";
 import "../../assets/Board.css";
 import { socketManager } from "../../services/socketManager";
-import { getValidMoves, getValidMovesJumping } from './utils/moves';
+import { getValidMoves, getValidMovesJumping } from "./utils/moves";
 
 const Board = () => {
   const { gameCode } = useParams();
@@ -22,6 +22,11 @@ const Board = () => {
   const [timeRemaining, setTimeRemaining] = useState(null); // null indica sin límite
   const [isGameOver, setIsGameOver] = useState(false);
 
+  // Estados para manejar el modal del ganador y la lista de jugadores
+  const [winnerInfo, setWinnerInfo] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [players, setPlayers] = useState([]); // Lista de jugadores conectados
+
   useEffect(() => {
     const socket = socketManager.getSocket();
 
@@ -30,46 +35,58 @@ const Board = () => {
     }
 
     if (socket && socket.connected) {
+      // Obtener estado inicial del juego
       socket.emit("getGameState", gameCode, (response) => {
         if (response.success) {
           setPositions(response.game.positions);
           if (response.game.gameType === "vsTiempo") {
             setTimeRemaining(response.game.gameTime * 60); // Configura el tiempo en segundos
           }
+          setPlayers(response.game.players || []); // Configura la lista de jugadores
         } else {
           console.error("Error al obtener el estado del juego:", response.message);
         }
         setIsLoading(false);
       });
 
+      // Escuchar actualizaciones del estado del juego
       socket.on("gameStateUpdated", (data) => {
         if (data && data.newPositions) {
-          setPositions(data.newPositions); 
+          setPositions(data.newPositions);
         }
       });
 
-      // Escuchar la actualización del estado del juego
-      socket.on("Winner", ({ game }) => {
-        const rankingData = {
-            gameId: game.gameCode,
-            winner: game.winner,
-            gameType: game.gameType,
-            creator: game.creatorName,
-            players: game.players
-        };
-
-        console.log(rankingData);
+      // Escuchar nuevos jugadores conectados
+      socket.on("playerConnected", (data) => {
+        setPlayers((prevPlayers) => [...prevPlayers, data.playerName]);
       });
 
+      // Escuchar la información del ganador
+      socket.on("Winner", ({ game }) => {
+        setWinnerInfo({
+          winner: game.winner,
+          players: game.players,
+          creator: game.creatorName,
+          gameId: game.gameCode,
+        });
+        setIsModalVisible(true); // Mostrar el modal
+      });
+
+      // Obtener todos los jugadores actuales
+      socket.emit("getPlayers", gameCode, (response) => {
+        if (response.success) {
+          setPlayers(response.players);
+        }
+      });
     } else {
       console.error("El socket no está disponible o no está conectado");
     }
 
     return () => {
       if (socket) {
-        socket.off("gameState");
         socket.off("gameStateUpdated");
-        socket.off('Winner');
+        socket.off("playerConnected");
+        socket.off("Winner");
       }
     };
   }, [gameCode]);
@@ -102,7 +119,7 @@ const Board = () => {
       if (
         color === "white" &&
         (validMoves.some(([vr, vc]) => vr === row && vc === col) ||
-         validMovesJumping.some(([vr, vc]) => vr === row && vc === col))
+          validMovesJumping.some(([vr, vc]) => vr === row && vc === col))
       ) {
         socket.emit(
           "validateMove",
@@ -159,6 +176,18 @@ const Board = () => {
 
   return (
     <div className="grid-container">
+      {isModalVisible && winnerInfo && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2 className="h2">Información del ganador</h2>
+            <p className="p"><strong>Ganador:</strong> {winnerInfo.winner}</p>
+            <p className="p"><strong>Jugadores:</strong> {players.join(", ")}</p>
+            <p className="p"><strong>Host de la partida:</strong> {winnerInfo.creator}</p>
+            <p className="p"><strong>Id de la sala:</strong> {winnerInfo.gameId}</p>
+            <button onClick={() => setIsModalVisible(false)}>Cerrar</button>
+          </div>
+        </div>
+      )}
       <div className="header-cell"></div>
       <div className="timer">
         <strong>Tiempo restante:</strong>{" "}
@@ -169,16 +198,12 @@ const Board = () => {
       {Array.from({ length: cols }, (_, index) => (
         <ColumnHeader key={index} index={index} />
       ))}
-
       {Array.from({ length: rows }, (_, rowIndex) => (
         <React.Fragment key={`row-${rowIndex}`}>
           <RowHeader rowIndex={rowIndex} />
-
           {Array.from({ length: cols }, (_, colIndex) => {
             const chipColor = Object.keys(positions).find((color) =>
-              positions[color]?.some(
-                ([row, col]) => row === rowIndex && col === colIndex
-              )
+              positions[color]?.some(([row, col]) => row === rowIndex && col === colIndex)
             );
 
             return (
