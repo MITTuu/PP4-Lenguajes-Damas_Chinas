@@ -18,7 +18,7 @@ class SocketManager {
         this.nickname = localStorage.getItem("nickname");
     
         // URL de Ngrok
-        const socketUrl = 'https://2d21-201-202-14-16.ngrok-free.app'; // Sólo URL de Ngrok
+        const socketUrl = 'http://localhost:5000';
     
         this.socket = io(socketUrl, {
             auth: {

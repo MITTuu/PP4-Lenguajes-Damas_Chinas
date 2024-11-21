@@ -19,7 +19,7 @@ const Board = () => {
   const [validMovesJumping, setValidMovesJumping] = useState([]);
   const [highlightedCells, setHighlightedCells] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [timeRemaining, setTimeRemaining] = useState(null); // null indica sin límite
+  const [timeRemaining, setTimeRemaining] = useState(null);
   const [isGameOver, setIsGameOver] = useState(false);
 
   // Estados para manejar el modal del ganador y la lista de jugadores
@@ -63,13 +63,15 @@ const Board = () => {
 
       // Escuchar la información del ganador
       socket.on("Winner", ({ game }) => {
-        setWinnerInfo({
-          winner: game.winner,
-          players: game.players,
-          creator: game.creatorName,
-          gameId: game.gameCode,
-        });
-        setIsModalVisible(true); // Mostrar el modal
+        const rankingData = {
+            gameId: game.gameCode,
+            winner: game.winner,
+            gameType: game.gameType,
+            creator: game.creatorName,
+            players: game.players
+        };
+
+        console.log(rankingData);
       });
 
       // Obtener todos los jugadores actuales
