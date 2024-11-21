@@ -13,7 +13,6 @@ import Board from './components/board/Board';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
 function App() {
   return (
     <React.Fragment>

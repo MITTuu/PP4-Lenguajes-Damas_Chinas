@@ -19,7 +19,7 @@ const Board = () => {
   const [validMovesJumping, setValidMovesJumping] = useState([]);
   const [highlightedCells, setHighlightedCells] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [timeRemaining, setTimeRemaining] = useState(null); // null indica sin límite
+  const [timeRemaining, setTimeRemaining] = useState(null);
   const [isGameOver, setIsGameOver] = useState(false);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const Board = () => {
             players: game.players
         };
 
-        console.log(rankingData);
+        console.log(rankingData.players);
       });
 
     } else {

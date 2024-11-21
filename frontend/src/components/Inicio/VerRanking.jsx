@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getRankings } from "../../services/api";
+import "../../assets/verRanking.css";
+
 
 const VerRanking = () => {
     const [rankings, setRankings] = useState([]);
@@ -33,12 +35,12 @@ const VerRanking = () => {
     }
 
     return (
-        <div>
-            <h1 className="inicio-title">
-                {"Crear Partida".split("").map((letra, index) => (
+        <div className="ranking-container">
+            <h1 className="ranking-title">
+                {"Ranking de Partidas".split("").map((letra, index) => (
                 <span 
                     key={index} 
-                    className="titulo-letra" 
+                    className="ranking-letra" 
                     style={{ animationDelay: `${index * 0.1}s` }}
                 >
                     {letra}
