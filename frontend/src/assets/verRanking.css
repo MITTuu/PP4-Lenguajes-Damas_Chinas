@@ -7,7 +7,7 @@
     width: 100vw; /* Asegura que el contenedor cubra toda la anchura de la ventana */
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     font-family: 'Press Start 2P', cursive;
     overflow: hidden;
@@ -17,14 +17,16 @@
     background-repeat: no-repeat; /* Evita que la imagen se repita */
 }
 
-/* Título con efecto ola */
+/* Contenedor del título */
+.ranking-title-container {
+    margin-top: 700px; /* Añadir espacio arriba */
+}
+
+/* Estilo del título */
 .ranking-title {
     font-size: 2.5rem;
-    position: relative; /* Usar position relative para asegurar que no se monte sobre otros elementos */
-    top: 150px; /* Establecer la distancia desde la parte superior */
     color: #ffcc00;
     text-shadow: 2px 2px 0 #000, 4px 4px 0 #ff5733;
-    margin-bottom: 1rem; /* Reducir el margen inferior para evitar demasiado espacio */
     display: flex;
     justify-content: center;
     gap: 0.1rem;
@@ -36,44 +38,62 @@
     animation: wave 1.5s infinite ease-in-out;
 }
 
+/* Contenedor de la tabla */
+.ranking-table-container {
+    margin-top: 30px; /* Espaciado entre título y tabla */
+    width: 80%; /* Ajusta el ancho de la tabla */
+    overflow-x: auto; /* Permite scroll horizontal si es necesario */
+}
+
 /* Estilos de la tabla */
 table {
-  width: 70%;
-  border-collapse: collapse;
-  font-family: 'Arial', sans-serif;
-  background-color: white; /* Fondo blanco */
-  margin-top: 200px; /* Deja espacio suficiente debajo del título para la tabla */
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Arial', sans-serif;
+    background-color: white; /* Fondo blanco */
 }
 
 table thead {
-  background-color: #f4f4f4;
-  color: #333;
+    background-color: #f4f4f4;
+    color: #333;
 }
 
 table th, table td {
-  padding: 0.5rem; /* Espaciado más compacto */
-  text-align: center;
-  border: 1px solid #ddd; /* Bordes ligeros */
+    padding: 0.5rem; /* Espaciado más compacto */
+    text-align: center;
+    border: 1px solid #ddd; /* Bordes ligeros */
 }
 
 table tbody tr:nth-child(odd) {
-  background-color: #f9f9f9; /* Fila impar en gris claro */
+    background-color: #f9f9f9; /* Fila impar en gris claro */
 }
 
 table tbody tr:nth-child(even) {
-  background-color: white; /* Fila par con fondo blanco */
+    background-color: white; /* Fila par con fondo blanco */
 }
 
 table tbody tr:hover {
-  background-color: #e6f7ff; /* Resaltar fila al pasar el ratón */
+    background-color: #e6f7ff; /* Resaltar fila al pasar el ratón */
 }
 
 table th {
-  font-weight: 600; /* Negrita para los encabezados */
-  font-size: 0.9rem; /* Tamaño más compacto */
+    font-weight: 600; /* Negrita para los encabezados */
+    font-size: 0.9rem; /* Tamaño más compacto */
 }
 
 table td {
-  color: #555;
-  font-size: 0.85rem; /* Texto más pequeño en las celdas */
+    color: #555;
+    font-size: 0.85rem; /* Texto más pequeño en las celdas */
+}
+
+@keyframes wave {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0);
+    }
 }

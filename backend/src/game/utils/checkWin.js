@@ -47,7 +47,30 @@ const checkWinner = (positions) => {
   return null; // Si no hay ganador
 };
 
+// Función para determinar ganador por tiempo
+const checkWinnerTimeOff = (positions) => {
+  let maxFichas = 0;
+  let winnerColor = null;
+
+  // Recorremos los colores para contar fichas en posiciones de ganar
+  for (const color in winPositions) {
+    const winPos = winPositions[color];
+    const playerPositions = positions[color] || [];
+    const fichasEnVictoria = winPos.filter(([r, c]) =>
+      playerPositions.some(([pr, pc]) => pr === r && pc === c)
+    ).length;
+
+    if (fichasEnVictoria > maxFichas) {
+      maxFichas = fichasEnVictoria;
+      winnerColor = color;
+    }
+  }
+
+  return winnerColor; 
+};
+
 module.exports = {
   winPositions,
   checkWinner,
+  checkWinnerTimeOff,
 };

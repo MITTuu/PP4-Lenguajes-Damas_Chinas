@@ -19,7 +19,8 @@ const Board = () => {
   const [validMovesJumping, setValidMovesJumping] = useState([]);
   const [highlightedCells, setHighlightedCells] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [timeRemaining, setTimeRemaining] = useState(null); // null indica sin límite
+  const [timeRemaining, setTimeRemaining] = useState(null);
+  const [turno, setTurno] = useState(null); 
   const [isGameOver, setIsGameOver] = useState(false);
 
   // Estados para manejar el modal del ganador
@@ -37,8 +38,9 @@ const Board = () => {
       socket.emit("getGameState", gameCode, (response) => {
         if (response.success) {
           setPositions(response.game.positions);
+          setTurno(response.game.turn);
           if (response.game.gameType === "vsTiempo") {
-            setTimeRemaining(response.game.gameTime * 60); // Configura el tiempo en segundos
+            setTimeRemaining(response.game.gameTime * 60);
           }
         } else {
           console.error("Error al obtener el estado del juego:", response.message);
@@ -49,16 +51,15 @@ const Board = () => {
       socket.on("gameStateUpdated", (data) => {
         if (data && data.newPositions) {
           setPositions(data.newPositions);
+          setTurno(data.nextTurn);
         }
       });
        
-      
-
       // Escuchar la actualización del estado del juego
       socket.on("Winner", ({ game }) => {
         setWinnerInfo({
           winner: game.winner,
-          players: game.players,
+          players: game.players.map((player) => player.nickname),
           creator: game.creatorName,
           gameId: game.gameCode,
         });
@@ -85,15 +86,33 @@ const Board = () => {
           if (prev <= 1) {
             clearInterval(timer);
             setIsGameOver(true); // Marca el juego como terminado
+            
+            // Emitir evento para verificar el ganador cuando se acabe el tiempo
+            const socket = socketManager.getSocket();
+            if (socket && socket.connected) {
+              socket.emit("checkWinnerTimeOff", { gameCode }, (response) => {
+                if (response.success) {
+                  setWinnerInfo({
+                    winner: response.game.winner,
+                    players: response.game.players.map((player) => player.nickname),
+                    creator: response.game.creatorName,
+                    gameId: response.game.gameCode,
+                  });
+                  setIsModalVisible(true); // Mostrar el modal con la información del ganador
+                } else {
+                  console.error("Error al obtener el ganador:", response.message);
+                }
+              });
+            }
             return 0;
           }
           return prev - 1;
         });
       }, 1000);
-
-      return () => clearInterval(timer); // Limpia el temporizador al desmontar
+  
+      return () => clearInterval(timer);
     }
-  }, [timeRemaining]);
+  }, [timeRemaining, gameCode]);  
 
   const handleClick = (row, col, color) => {
     const socket = socketManager.getSocket();
@@ -152,15 +171,6 @@ const Board = () => {
     return <div>Loading...</div>;
   }
 
-  if (isGameOver) {
-    return (
-      <div className="game-over-container">
-        <h1>El tiempo se ha acabado</h1>
-        <button onClick={() => navigate("/")}>Regresar al inicio</button>
-      </div>
-    );
-  }
-
   return (
     <div className="grid-container">
       {isModalVisible && winnerInfo && (
@@ -181,6 +191,8 @@ const Board = () => {
         {timeRemaining === null
           ? "Sin límite"
           : `${Math.floor(timeRemaining / 60)}:${String(timeRemaining % 60).padStart(2, "0")}`}
+        <br />
+        <strong>Turno de: {turno}</strong>
       </div>
       {Array.from({ length: cols }, (_, index) => (
         <ColumnHeader key={index} index={index} />

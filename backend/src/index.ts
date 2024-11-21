@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 const { getAdjustedPositions } = require("./game/utils/positions");
-const { checkWinner } = require("./game/utils/checkWin");
+const { checkWinnerTimeOff, checkWinner } = require("./game/utils/checkWin");
 import { postRanking } from './services/api';
 import { Game, GameConfig, Player } from "./types/gameTypes";
 
@@ -305,7 +305,52 @@ io.on("connection", (socket: Socket) => {
     // Confirmar el movimiento al cliente
     callback({ success: true, newPositions: game.positions, nextTurn: game.turn });
   });
+
+  socket.on("checkWinnerTimeOff", ({ gameCode }, callback) => {
+    const game = games.find((g) => g.gameCode === gameCode);
   
+    if (!game) {
+      return callback({ success: false, message: "Juego no encontrado" });
+    }
+  
+    // Chequear si hay ganador
+    const winnerColor = checkWinnerTimeOff(game.positions);
+  
+    if (winnerColor) {
+      // Buscar el jugador con el color ganador
+      const winnerPlayer = game.players.find((player) => player.color === winnerColor);
+  
+      if (!winnerPlayer) {
+        return callback({ success: false, message: "No se pudo determinar el ganador" });
+      }
+  
+      // Asignar el nickname del ganador
+      game.winner = winnerPlayer.nickname;
+  
+      // Crear y enviar los datos del ranking
+      const rankingData = {
+        gameId: game.gameCode,
+        winner: game.winner,
+        gameType: game.gameType || "Indefinido",
+        creator: game.creatorName,
+      };
+  
+      postRanking(rankingData).then((response) => {
+        if (response.success) {
+          console.log("Ranking guardado:", response);
+        } else {
+          console.log("Error guardando el ranking:", response.message);
+        }
+      });
+  
+      // Notificar al resto de los jugadores sobre el ganador
+      io.to(gameCode).emit("Winner", { game: game });
+    }
+  
+    // Responder al cliente con éxito
+    callback({ success: true, game: game });
+  });  
+
   // Desconexión del jugador
   socket.on("disconnect", () => {
     console.log("Jugador desconectado:", socket.id);
