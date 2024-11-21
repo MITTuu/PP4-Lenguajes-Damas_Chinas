@@ -51,6 +51,8 @@ const Board = () => {
           setPositions(data.newPositions);
         }
       });
+       
+      
 
       // Escuchar la actualización del estado del juego
       socket.on("Winner", ({ game }) => {
