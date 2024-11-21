@@ -2,13 +2,15 @@
 
 /* Estilo del Modal */
 .modal-content {
-    background-color: rgba(0, 0, 0, 0.85); /* Fondo oscuro */
-    color: #fff;
+    z-index: 1050;
+    color: #ffcc00;
+    text-shadow: 2px 2px 0 #000, 4px 4px 0 #ff5733;
     border: 3px solid #ffcc00; /* Bordes dorados */
     border-radius: 8px;
     text-align: center;
     font-family: 'Press Start 2P', cursive;
 }
+
 
 .modal-header {
     border-bottom: 2px solid #ffcc00;
