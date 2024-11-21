@@ -16,6 +16,9 @@ const Sala = () => {
     const [creatorSocketId, setCreatorSocketId] = useState(initialGameInfo?.creator || null);
     const [currentPlayerSocketId, setCurrentPlayerSocketId] = useState("");
     const [error, setError] = useState("");
+    const [isExpired, setIsExpired] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(60); // Tiempo restante en segundos
+
 
     useEffect(() => {
         const nickname = localStorage.getItem("nickname");
@@ -75,17 +78,42 @@ const Sala = () => {
             });          
         };
 
+        socket.on("allGamesClosed", () => {
+            setError("No hay salas disponibles en este momento.");
+            navigate("/");
+        });
+    
+
         setupSocketListeners();
 
-        // Cleanup function
+
+
+        // Temporizador para manejar la expiración de la sala
+        const countdownInterval = setInterval(() => {
+            setTimeLeft((prevTime) => {
+                console.log(`Tiempo restante: ${prevTime - 1} segundos`);
+                return prevTime - 1;
+            });
+        }, 1000);
+
+        const expirationTime = gameDetails?.expirationTime || 30; // Valor de expiración desde los detalles del juego
+        const expirationTimeout = setTimeout(() => {
+            setIsExpired(true);
+            clearInterval(countdownInterval); // Detener el intervalo cuando la sala expire
+            socket.emit("expireGame", gameCode); // Notificar al servidor que esta sala ha expirado
+            socket.emit("closeAllGames"); // Notificar al servidor para cerrar todas las salas
+        }, expirationTime * 1000); // Convertir a milisegundos
+    
         return () => {
-            const socket = socketManager.getSocket();
+            clearTimeout(expirationTimeout);
+            clearInterval(countdownInterval);
             if (socket) {
                 socket.off("gamesUpdated");
                 socket.off("gameUpdated");
                 socket.off("playerJoined");
                 socket.off("gameError");
                 socket.off("gameStarted");
+                socket.off("allGamesClosed");
             }
         };
     }, [gameCode, navigate]);
@@ -139,6 +167,7 @@ const Sala = () => {
             <h1>Información de la Sala</h1>
             {gameDetails ? (
                 <>
+                    <p>Tiempo restante: {timeLeft} segundos</p>
                     <p><strong>Código de la partida:</strong> {gameCode}</p>
                     <p><strong>Tipo de juego:</strong> {gameDetails.gameType}</p>
                     <p><strong>Jugadores actuales:</strong> {players.length}/{gameDetails.numPlayers}</p>

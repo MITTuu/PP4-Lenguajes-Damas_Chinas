@@ -69,7 +69,6 @@ io.on("connection", (socket: Socket) => {
     }
   );
 
-
   // Evento para cerrar todos los juegos
   socket.on("closeAllGames", () => {
     console.log("Cerrando todos los juegos...");
@@ -82,6 +81,8 @@ io.on("connection", (socket: Socket) => {
 
     console.log("Todos los juegos han sido cerrados.");
   });
+ 
+  
 
   // Obtener salas disponibles
   socket.on("getAvailableGames", (callback: (response: { success: boolean; message?: string; games?: Game[] }) => void) => {

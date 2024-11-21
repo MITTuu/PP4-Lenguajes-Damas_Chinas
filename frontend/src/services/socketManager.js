@@ -14,7 +14,7 @@ class SocketManager {
         if (this.socket) {
             this.disconnect();
         }
-    
+     
         this.nickname = localStorage.getItem("nickname");
     
         // URL de Ngrok
